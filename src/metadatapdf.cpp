@@ -5,9 +5,22 @@
  *
  * @package MetadataPDF
  *
+ * https://github.com/fermendi
  */
 
 #include "metadatapdf.h"
+#include <QMainWindow>
+#include <QFileDialog>
+#include <QMessageBox>
+#include <QDebug>
+#include <QFileInfo>
+#include <QProcess>
+#include <iostream>
+#include <fstream>
+#include <QDate>
+#include <QPropertyAnimation>
+#include <QTimer>
+
 #include "ui_metadatapdf.h"
 
 MetadataPDF::MetadataPDF(QWidget *parent) :
@@ -16,8 +29,12 @@ MetadataPDF::MetadataPDF(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    connect(&timer, SIGNAL(timeout()), this, SLOT(timeoutHandler()));
+
     ui->dateMod->setDateTime(QDateTime::currentDateTime());
     ui->dateCreation->setDateTime(QDateTime::currentDateTime());
+    ui->linePDFFile->setDisabled(true);
+    StackedWidgetHandler(Init);
 }
 
 MetadataPDF::~MetadataPDF()
@@ -34,50 +51,51 @@ void MetadataPDF::on_buttonSelectPDF_clicked()
                 "PDF file (*.pdf)");
 
     ui->linePDFFile->setText(m_filename);
+    if(!m_filename.isEmpty()) ResetGUI();
+}
+
+void MetadataPDF::ResetGUI() {
+    StatusBarHandler(Clear);
+    ui->linePDFFile->setStyleSheet("");
 }
 
 void MetadataPDF::on_buttonConvertMetadata_clicked()
 {
+    m_filename = ui->linePDFFile->text();
     if(!m_filename.isEmpty()) {
 
         std::string str2(" ");
         std::size_t found = m_filename.toStdString().find(str2);
         if (found!=std::string::npos) {
-            QMessageBox::warning(this, "MetadataPDF",
-                                     QString("Please avoid spaces (\" \") in the path or file name and try again!"),
-                                  QMessageBox::Ok);
+            StatusBarHandler(WrongPath);
         }
         else {
             GetDateModAndCurrent();
 
-            QMessageBox::StandardButton qAnsChangeMetadata;
-            MessageChangeMetadata(qAnsChangeMetadata);
+            bool isChangedMetadata;
+            isChangedMetadata = MessageChangeMetadata();
 
-            if(qAnsChangeMetadata == QMessageBox::Yes) {
-                ui->statusBar->showMessage("Changing the Metadata, please wait...");
+            if(isChangedMetadata) {
+                ResetGUI();
+                StatusBarHandler(Progress);
                 CreatePdfmarksFile();
                 ChangeMetadata();
                 DeletePdfMarks();
-                ui->statusBar->showMessage("");
+                StatusBarHandler(Success);
+            }
+            else {
+                StatusBarHandler(Clear);
             }
         }
-
-
     } else {
-        QMessageBox::warning(this, "MetadataPDF",
-                                 QString("Please select a file!"),
-                              QMessageBox::Ok);
+        StatusBarHandler(SelectFile);
     }
-}
-
-void MetadataPDF::on_buttonExit_clicked()
-{
-    ExitProgram();
 }
 
 void MetadataPDF::on_buttonHelp_clicked()
 {
-    HelpMessage();
+    StackedWidgetHandler(Help);
+    StatusBarHandler(Clear);
 }
 
 void MetadataPDF::GetDateModAndCurrent() {
@@ -130,76 +148,166 @@ void MetadataPDF::DeletePdfMarks() {
     QProcess::execute(QString("rm -rf ") +
                       QString(pathFile) +
                       QString("/pdfmarks"));
-
-    QMessageBox::information(this, "End of conversion",QString("Metadata has been changed!"));
 }
 
+bool MetadataPDF::MessageChangeMetadata() {
+    //define styles buttons (TODO: make it in .qss files)
+    QString QStyleButtons = " QPushButton {"
+                           "background-color: rgb(78, 154, 6);"
+                           "border: 2px solid rgb(50, 88, 50);"
+                           "border-radius: 5px;"
+                           "color:black;"
+                           "font-size: 12pt;"
+                           "font-weight: bold;"
+                           "height: 30px;"
+                           "width: 80px;"
+                       "}"
+                      " QPushButton:hover {"
+                           "background-color: rgb(50, 88, 50);"
+                           "border: 2px solid rgb(45, 60, 45);"
+                           "color:white;"
+                       "}"
+                       "QPushButton:pressed {"
+                           "background-color: rgb(85, 170, 255);"
+                           "border: 2px solid rgb(160, 170, 255);"
+                           "color: rgb(35, 35, 35);"
+                       "}";
 
-void MetadataPDF::MessageChangeMetadata(QMessageBox::StandardButton& qAnsChangeMetadata) {
     QFileInfo info(m_filename);
-    qAnsChangeMetadata = QMessageBox::question(this, "Change metadata",
-                                     QString("File: %1\n"
-                                     "Path: %2\n\n"
-                                     "Do you want to change to this data?\n\n"
-                                     "PDF Output: %3\n"
-                                     "Path to be save: %4\n"
-                                     "Title: %5\n"
-                                     "Author: %6\n"
-                                     "Subject: %7\n"
-                                     "Keywords: %8\n"
-                                     "ModDate: %9\n"
-                                     "CreationDate: %10\n"
-                                     "Creator: %11\n"
-                                     "Producer: %12\n")
-                                         .arg(info.baseName())
-                                         .arg(info.path())
-                                         .arg(ui->linePDFOutput->text())
-                                         .arg(info.path())
-                                         .arg(ui->lineTitle->text())
-                                         .arg(ui->lineAuthor->text())
-                                         .arg(ui->lineSubject->text())
-                                         .arg(ui->lineKeywords->text())
-                                         .arg(QString(m_ModDate.c_str()))
-                                         .arg(QString(m_CreationDate.c_str()))
-                                         .arg(ui->lineCreator->text())
-                                         .arg(ui->lineProducer->text()),
-                                         QMessageBox::Yes|QMessageBox::No);
+    QMessageBox mb("Change metadata",
+                       QString("File: %1.pdf\n"
+                       "Path: %2\n\n"
+                       "Do you want to change to this data?\n\n"
+                       "PDF Output: %3\n"
+                       "Path to be saved: %4\n"
+                       "Title: %5\n"
+                       "Author: %6\n"
+                       "Subject: %7\n"
+                       "Keywords: %8\n"
+                       "ModDate: %9\n"
+                       "CreationDate: %10\n"
+                       "Creator: %11\n"
+                       "Producer: %12\n")
+                           .arg(info.baseName())
+                           .arg(info.path())
+                           .arg(ui->linePDFOutput->text())
+                           .arg(info.path())
+                           .arg(ui->lineTitle->text())
+                           .arg(ui->lineAuthor->text())
+                           .arg(ui->lineSubject->text())
+                           .arg(ui->lineKeywords->text())
+                           .arg(QString(m_ModDate.c_str()))
+                           .arg(QString(m_CreationDate.c_str()))
+                           .arg(ui->lineCreator->text())
+                           .arg(ui->lineProducer->text()),
+                                   QMessageBox::NoIcon,
+                                   QMessageBox::Yes | QMessageBox::Default,
+                                   QMessageBox::No,
+                                   QMessageBox::NoButton);
+    mb.setIconPixmap(QPixmap("://icons/questionmark_30x30.png"));
+    mb.setWindowIcon(QIcon(":/logo/logo40x40.png"));
+    mb.setStyleSheet("background-color: rgb(52, 101, 164);color: rgb(255, 255, 255);");
+    mb.button(QMessageBox::Yes)->setStyleSheet(QStyleButtons);
+    mb.button(QMessageBox::No)->setStyleSheet(QStyleButtons);
+    if(mb.exec() == QMessageBox::Yes){
+        return true;
+    }
+    return false;
 }
 
-void MetadataPDF::ExitProgram() {
-    QMessageBox::StandardButton reply;
-    reply = QMessageBox::question(this, "Warning", "Do you want to quit?",
-                                  QMessageBox::Yes|QMessageBox::No);
-    if (reply == QMessageBox::Yes) {
-      QApplication::quit();
+void MetadataPDF::on_buttonMenuD_clicked()
+{
+    int witdthMenu = ui->left_menu->width();
+    int widthExtended;
+    int standard = 50;
+    int maxExtend = 160;
+    QRect SizeIconXY = ui->Icon_Move->geometry();
+    QRect SizeIconXYExtended;
+    QRect StdPosSizeIconXY(4,440,42,42);
+    QRect MaxPosSizeIconXY(38,420,84,84);
+
+    if(witdthMenu == 50) {
+        widthExtended = maxExtend;
+        SizeIconXYExtended = MaxPosSizeIconXY;
+    }
+    else {
+        widthExtended = standard;
+        SizeIconXYExtended = StdPosSizeIconXY;
+    }
+
+    // Create the menu animation.
+    QPropertyAnimation* MenuAnimation = new QPropertyAnimation(ui->left_menu, "minimumWidth");
+    MenuAnimation->setDuration(300);
+    MenuAnimation->setStartValue(witdthMenu);
+    MenuAnimation->setEndValue(widthExtended);
+    MenuAnimation->setEasingCurve(QEasingCurve::InOutQuad);
+    MenuAnimation->start();
+
+    // Create the icon animation.
+    QPropertyAnimation* IconAnimation = new QPropertyAnimation(ui->Icon_Move, "geometry");
+    IconAnimation->setStartValue(SizeIconXY);
+    IconAnimation->setEndValue(SizeIconXYExtended);
+    IconAnimation->setEasingCurve(QEasingCurve::InOutQuad);
+    IconAnimation->start();
+}
+
+void MetadataPDF::on_buttonApplication_clicked()
+{
+    StackedWidgetHandler(App);
+}
+
+void MetadataPDF::on_buttonAbout_clicked()
+{
+    StackedWidgetHandler(About);
+    StatusBarHandler(Clear);
+}
+
+void MetadataPDF::StatusBarHandler(statusBarState status) {
+    switch (status) {
+        case WrongPath:
+            ui->statusLabel->setStyleSheet("color:rgb(255, 0, 0);");
+            ui->statusLabel->setText("Please avoid spaces (\" \") in the path or file name and try again!");
+            ui->linePDFFile->setStyleSheet("border: 2px solid rgb(255, 0, 0); border-radius: 5px;");
+            break;
+        case SelectFile:
+            ui->statusLabel->setStyleSheet("color:rgb(255, 0, 0);");
+            ui->statusLabel->setText("Please select a file!");
+            ui->linePDFFile->setStyleSheet("border: 2px solid rgb(255, 0, 0); border-radius: 5px;");
+            break;
+        case Progress:
+            ui->statusLabel->setStyleSheet("color:rgb(255, 255, 0);");
+            ui->statusLabel->setText("Changing Metadata, please wait...");
+            break;
+        case Success:
+            ui->statusLabel->setStyleSheet("color:rgb(0, 255, 0);");
+            ui->statusLabel->setText("Metadata has been changed successfully!");
+            timer.start(10000);     // 10s to erase the message
+            break;
+        case Clear:
+            ui->statusLabel->clear();
+            break;
+        default:
+            break;
     }
 }
 
-void MetadataPDF::HelpMessage() {
-    QMessageBox::information(this, "Help MetadataPDF",
-                             QString("1- Press the button \"Select PDF\".\n\n"
-                                     "2- Select the PDF tha you want to change the metadata (PDF name or path file without spaces).\n\n"
-                                     "3- Change the fields of the metadata file as desired (title, author, etc).\n\n"
-                                     "4- Press the button \"Convert Metadata\".\n\n"
-                                     "5- Find the output file \"%1\" with the desired metadata.")
-                             .arg(ui->linePDFOutput->text()),
-                                  QMessageBox::Ok);
+void MetadataPDF::timeoutHandler()
+{
+    StatusBarHandler(Clear);
 }
 
-void MetadataPDF::on_actionAbout_triggered()
-{
-    AboutDialog AboutW;
-    AboutW.setModal(true);
-    AboutW.exec();
-
-}
-
-void MetadataPDF::on_actionHelp_triggered()
-{
-    HelpMessage();
-}
-
-void MetadataPDF::on_actionExit_triggered()
-{
-    ExitProgram();
+void MetadataPDF::StackedWidgetHandler(stackedWidgetState status) {
+    ui->stackedWidget->setCurrentIndex(status);
+    switch (status) {
+    case Init:
+    case About:
+        ui->Icon_Move->setHidden(true);
+        break;
+    case App:
+    case Help:
+        ui->Icon_Move->setVisible(true);
+        break;
+    default:
+        break;
+    }
 }

@@ -1,0 +1,20 @@
+<RCC>
+    <qresource prefix="/">
+        <file>logo/logo-400x400.png</file>
+        <file>icons/about.png</file>
+        <file>icons/annex.png</file>
+        <file>icons/app.png</file>
+        <file>icons/close.png</file>
+        <file>icons/folder.png</file>
+        <file>icons/manu.png</file>
+        <file>icons/maximize.png</file>
+        <file>icons/minimize.png</file>
+        <file>icons/notes.png</file>
+        <file>icons/question.png</file>
+        <file>icons/restore.png</file>
+        <file>icons/questionmark_30x30.png</file>
+        <file>logo/logo40x40.png</file>
+        <file>logo/logo_80x80.png</file>
+        <file>logo/logo_80x802.png</file>
+    </qresource>
+</RCC>

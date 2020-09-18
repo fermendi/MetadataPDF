@@ -5,22 +5,15 @@
  *
  * @package MetadataPDF
  *
+ * https://github.com/fermendi
  */
 
 #ifndef METADATAPDF_H
 #define METADATAPDF_H
 
 #include <QMainWindow>
-#include <QFileDialog>
 #include <QMessageBox>
-#include <QDebug>
-#include <QFileInfo>
-#include <QProcess>
-#include <iostream>
-#include <fstream>
-#include <QDate>
-
-#include "aboutdialog.h"
+#include <QTimer>
 
 namespace Ui {
 class MetadataPDF;
@@ -37,27 +30,32 @@ public:
 private slots:
     void on_buttonSelectPDF_clicked();
     void on_buttonConvertMetadata_clicked();
-    void on_buttonExit_clicked();
     void on_buttonHelp_clicked();
-    void on_actionAbout_triggered();
-    void on_actionHelp_triggered();
-    void on_actionExit_triggered();
+    void on_buttonMenuD_clicked();
+    void on_buttonApplication_clicked();
+    void on_buttonAbout_clicked();
+    void timeoutHandler();
 
 private:
+    enum stackedWidgetState {Init, App, Help, About};
+    enum statusBarState {SelectFile, WrongPath, Progress, Success, Clear};
 
-    void MessageChangeMetadata(QMessageBox::StandardButton&);
+    bool MessageChangeMetadata();
     void CreatePdfmarksFile();
     void ChangeMetadata();
     void DeletePdfMarks();
-    void ExitProgram();
     void HelpMessage();
     void GetDateModAndCurrent();
+    void ResetGUI();
+    void StatusBarHandler(statusBarState status);
+    void StackedWidgetHandler(stackedWidgetState status);
 
     Ui::MetadataPDF *ui;
 
     QString m_filename;
     std::string m_ModDate;
     std::string m_CreationDate;
+    QTimer timer;
 };
 
 #endif // METADATAPDF_H
