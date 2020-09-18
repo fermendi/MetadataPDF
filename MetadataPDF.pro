@@ -5,6 +5,8 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET      =  MetadataPDF
 TEMPLATE    =  app
 
+INCLUDEPATH +="framelesswindow"
+
 SOURCES     += main.cpp\
                src/metadatapdf.cpp \
                framelesswindow/framelesswindow.cpp \
