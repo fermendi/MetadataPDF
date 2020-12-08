@@ -34,6 +34,7 @@ MetadataPDF::MetadataPDF(QWidget *parent) :
     ui->dateMod->setDateTime(QDateTime::currentDateTime());
     ui->dateCreation->setDateTime(QDateTime::currentDateTime());
     ui->linePDFFile->setDisabled(true);
+    ui->outputPDFtoMerge->setDisabled(true);
     StackedWidgetHandler(Init);
 }
 
@@ -57,6 +58,24 @@ void MetadataPDF::on_buttonSelectPDF_clicked()
 void MetadataPDF::ResetGUI() {
     StatusBarHandler(Clear);
     ui->linePDFFile->setStyleSheet("");
+    ui->buttonAddPDF->setStyleSheet("QPushButton {	"
+                                    "background-color: rgb(78, 154, 6);"
+                                    "border: 2px solid rgb(50, 88, 50);"
+                                    "border-radius: 5px;"
+                                    "color:black;"
+                                    "font-size: 12pt;"
+                                    "font-weight: bold;"
+                                    "}"
+                                    "QPushButton:hover {	"
+                                    "background-color: rgb(50, 88, 50);"
+                                    "border: 2px solid rgb(45, 60, 45);"
+                                    "color:white;"
+                                    "}"
+                                    "QPushButton:pressed {	"
+                                    "background-color: rgb(85, 170, 255);"
+                                    "border: 2px solid rgb(160, 170, 255);"
+                                    "color: rgb(35, 35, 35);"
+                                    "}");
 }
 
 void MetadataPDF::on_buttonConvertMetadata_clicked()
@@ -77,11 +96,11 @@ void MetadataPDF::on_buttonConvertMetadata_clicked()
 
             if(isChangedMetadata) {
                 ResetGUI();
-                StatusBarHandler(Progress);
+                StatusBarHandler(Progress_Metadata);
                 CreatePdfmarksFile();
                 ChangeMetadata();
                 DeletePdfMarks();
-                StatusBarHandler(Success);
+                StatusBarHandler(Success_Metadata);
             }
             else {
                 StatusBarHandler(Clear);
@@ -269,18 +288,37 @@ void MetadataPDF::StatusBarHandler(statusBarState status) {
             ui->statusLabel->setText("Please avoid spaces (\" \") in the path or file name and try again!");
             ui->linePDFFile->setStyleSheet("border: 2px solid rgb(255, 0, 0); border-radius: 5px;");
             break;
+        case WrongNullPDFs:
+            ui->statusLabel->setStyleSheet("color:rgb(255, 0, 0);");
+            ui->statusLabel->setText("Please add PDFs to merge and try again!");
+            ui->buttonAddPDF->setStyleSheet("border: 2px solid rgb(255, 0, 0); "
+                                            "border-radius: 5px; "
+                                            "background-color: "
+                                            "rgb(78, 154, 6);color:black;"
+                                            "font-size: 12pt;"
+                                            "font-weight: bold;");
+            break;
         case SelectFile:
             ui->statusLabel->setStyleSheet("color:rgb(255, 0, 0);");
             ui->statusLabel->setText("Please select a file!");
             ui->linePDFFile->setStyleSheet("border: 2px solid rgb(255, 0, 0); border-radius: 5px;");
             break;
-        case Progress:
+        case Progress_Metadata:
             ui->statusLabel->setStyleSheet("color:rgb(255, 255, 0);");
             ui->statusLabel->setText("Changing Metadata, please wait...");
             break;
-        case Success:
+        case Progress_Merge:
+            ui->statusLabel->setStyleSheet("color:rgb(255, 255, 0);");
+            ui->statusLabel->setText("Merge PDFs, please wait...");
+            break;
+        case Success_Metadata:
             ui->statusLabel->setStyleSheet("color:rgb(0, 255, 0);");
-            ui->statusLabel->setText("Metadata has been changed successfully!");
+            ui->statusLabel->setText("Metadata has been changed Successfully!");
+            timer.start(10000);     // 10s to erase the message
+            break;
+        case Success_Merge:
+            ui->statusLabel->setStyleSheet("color:rgb(0, 255, 0);");
+            ui->statusLabel->setText("PDFs has been merged Successfully!");
             timer.start(10000);     // 10s to erase the message
             break;
         case Clear:
@@ -309,5 +347,58 @@ void MetadataPDF::StackedWidgetHandler(stackedWidgetState status) {
         break;
     default:
         break;
+    }
+}
+
+void MetadataPDF::on_buttonAddPDF_clicked()
+{
+    ResetGUI();
+    QStringList qFiles = QFileDialog::getOpenFileNames(
+                this,
+                tr("Open File"),
+                "",
+                "PDF file (*.pdf)");
+
+    qFilesAdd.append(qFiles);
+    PrintPDFs();
+
+}
+
+void MetadataPDF::on_buttonMerge_clicked()
+{
+    StackedWidgetHandler(Merge);
+    StatusBarHandler(Clear);
+}
+
+void MetadataPDF::on_buttonRemovePDF_clicked()
+{
+    if(!qFilesAdd.empty()) {
+        qFilesAdd.pop_back();
+    }
+    PrintPDFs();
+}
+
+void MetadataPDF::PrintPDFs() {
+    ui->outputPDFtoMerge->clear();
+    for(QString qFile : qFilesAdd) {
+        ui->outputPDFtoMerge->appendPlainText(qFile);
+    }
+}
+
+void MetadataPDF::on_buttonMergePDF_clicked()
+{
+    if(!qFilesAdd.empty()) {
+        QString QFiles;
+        for(QString qFile : qFilesAdd) {
+            QFiles += " ";
+            QFiles += qFile;
+        }
+        StatusBarHandler(Progress_Merge);
+        QProcess::execute(QString("gs -dBATCH -dNOPAUSE -q -sDEVICE=pdfwrite -dAutoRotatePages=/None -sOutputFile=MetadataPDF_Merged.pdf") +
+                          QFiles);
+        StatusBarHandler(Success_Merge);
+    }
+    else {
+        StatusBarHandler(WrongNullPDFs);
     }
 }

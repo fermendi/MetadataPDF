@@ -35,10 +35,15 @@ private slots:
     void on_buttonApplication_clicked();
     void on_buttonAbout_clicked();
     void timeoutHandler();
+    void on_buttonAddPDF_clicked();
+    void on_buttonMerge_clicked();
+    void on_buttonRemovePDF_clicked();
+
+    void on_buttonMergePDF_clicked();
 
 private:
-    enum stackedWidgetState {Init, App, Help, About};
-    enum statusBarState {SelectFile, WrongPath, Progress, Success, Clear};
+    enum stackedWidgetState {Init, App, Merge, Help, About};
+    enum statusBarState {SelectFile, WrongPath, WrongNullPDFs, Progress_Metadata, Progress_Merge, Success_Metadata, Success_Merge, Clear};
 
     bool MessageChangeMetadata();
     void CreatePdfmarksFile();
@@ -47,12 +52,14 @@ private:
     void HelpMessage();
     void GetDateModAndCurrent();
     void ResetGUI();
+    void PrintPDFs();
     void StatusBarHandler(statusBarState status);
     void StackedWidgetHandler(stackedWidgetState status);
 
     Ui::MetadataPDF *ui;
 
     QString m_filename;
+    QStringList qFilesAdd;
     std::string m_ModDate;
     std::string m_CreationDate;
     QTimer timer;

@@ -16,5 +16,7 @@
         <file>logo/logo40x40.png</file>
         <file>logo/logo_80x80.png</file>
         <file>logo/logo_80x802.png</file>
+        <file>icons/cil-minus.png</file>
+        <file>icons/cil-plus.png</file>
     </qresource>
 </RCC>

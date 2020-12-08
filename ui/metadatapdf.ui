@@ -160,7 +160,7 @@ QToolTip {
             <x>3</x>
             <y>3</y>
             <width>134</width>
-            <height>151</height>
+            <height>178</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -168,6 +168,9 @@ QToolTip {
             <number>0</number>
            </property>
            <property name="topMargin">
+            <number>0</number>
+           </property>
+           <property name="bottomMargin">
             <number>0</number>
            </property>
            <item>
@@ -225,7 +228,60 @@ QPushButton:pressed {
             </layout>
            </item>
            <item>
-            <layout class="QHBoxLayout" name="horizontalLayout_12">
+            <layout class="QHBoxLayout" name="horizontalLayout_5">
+             <property name="leftMargin">
+              <number>0</number>
+             </property>
+             <item>
+              <widget class="QPushButton" name="buttonMerge">
+               <property name="minimumSize">
+                <size>
+                 <width>130</width>
+                 <height>42</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>130</width>
+                 <height>42</height>
+                </size>
+               </property>
+               <property name="layoutDirection">
+                <enum>Qt::LeftToRight</enum>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">QPushButton {
+	border: none;
+	background-color: transparent;
+	color: rgb(200, 200, 200);
+	padding-left: 4px;
+}
+QPushButton:hover {
+	background-color: rgb(33, 37, 43);
+}
+QPushButton:pressed {	
+	background-color: rgb(85, 170, 255);
+}</string>
+               </property>
+               <property name="text">
+                <string>     Merge PDF</string>
+               </property>
+               <property name="icon">
+                <iconset resource="../resources/metadatapdf.qrc">
+                 <normaloff>:/icons/annex.png</normaloff>:/icons/annex.png</iconset>
+               </property>
+               <property name="iconSize">
+                <size>
+                 <width>16</width>
+                 <height>16</height>
+                </size>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_13">
              <property name="spacing">
               <number>0</number>
              </property>
@@ -278,7 +334,7 @@ QPushButton:pressed {
             </layout>
            </item>
            <item>
-            <layout class="QHBoxLayout" name="horizontalLayout_13">
+            <layout class="QHBoxLayout" name="horizontalLayout_14">
              <property name="spacing">
               <number>0</number>
              </property>
@@ -919,7 +975,7 @@ QPushButton:pressed {
              </size>
             </property>
             <property name="currentIndex">
-             <number>1</number>
+             <number>3</number>
             </property>
             <widget class="QWidget" name="Intro">
              <layout class="QGridLayout" name="gridLayout_8">
@@ -1064,7 +1120,7 @@ QFrame:hover {
                     </size>
                    </property>
                    <property name="text">
-                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:12pt; font-weight:600; color:#eeeeec;&quot;&gt;Change metadata of PDF files&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:12pt; font-weight:600; color:#eeeeec;&quot;&gt;Change metadata and merge PDF files&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                    </property>
                    <property name="alignment">
                     <set>Qt::AlignCenter</set>
@@ -1103,7 +1159,7 @@ QFrame:hover {
                  <widget class="QPushButton" name="buttonSelectPDF">
                   <property name="minimumSize">
                    <size>
-                    <width>0</width>
+                    <width>120</width>
                     <height>0</height>
                    </size>
                   </property>
@@ -1546,8 +1602,8 @@ QPushButton:pressed {
                    <string>Select PDF</string>
                   </property>
                   <property name="icon">
-                   <iconset>
-                    <normaloff>:/resources/icons/folder.png</normaloff>:/resources/icons/folder.png</iconset>
+                   <iconset resource="../resources/metadatapdf.qrc">
+                    <normaloff>:/icons/folder.png</normaloff>:/icons/folder.png</iconset>
                   </property>
                  </widget>
                 </item>
@@ -10310,8 +10366,8 @@ QPushButton:pressed {
                    <string>Convert Metadata</string>
                   </property>
                   <property name="icon">
-                   <iconset>
-                    <normaloff>:/resources/icons/annex.png</normaloff>:/resources/icons/annex.png</iconset>
+                   <iconset resource="../resources/metadatapdf.qrc">
+                    <normaloff>:/icons/annex.png</normaloff>:/icons/annex.png</iconset>
                   </property>
                  </widget>
                 </item>
@@ -10332,6 +10388,568 @@ QPushButton:pressed {
               </item>
              </layout>
             </widget>
+            <widget class="QWidget" name="mergePDF">
+             <layout class="QGridLayout" name="gridLayout_7">
+              <item row="0" column="0">
+               <layout class="QVBoxLayout" name="verticalLayout_7">
+                <item>
+                 <layout class="QHBoxLayout" name="horizontalLayout_3">
+                  <item>
+                   <widget class="QPushButton" name="buttonAddPDF">
+                    <property name="minimumSize">
+                     <size>
+                      <width>130</width>
+                      <height>0</height>
+                     </size>
+                    </property>
+                    <property name="palette">
+                     <palette>
+                      <active>
+                       <colorrole role="WindowText">
+                        <brush brushstyle="SolidPattern">
+                         <color alpha="255">
+                          <red>0</red>
+                          <green>0</green>
+                          <blue>0</blue>
+                         </color>
+                        </brush>
+                       </colorrole>
+                       <colorrole role="Button">
+                        <brush brushstyle="SolidPattern">
+                         <color alpha="255">
+                          <red>78</red>
+                          <green>154</green>
+                          <blue>6</blue>
+                         </color>
+                        </brush>
+                       </colorrole>
+                       <colorrole role="Light">
+                        <brush brushstyle="SolidPattern">
+                         <color alpha="255">
+                          <red>111</red>
+                          <green>168</green>
+                          <blue>255</blue>
+                         </color>
+                        </brush>
+                       </colorrole>
+                       <colorrole role="Midlight">
+                        <brush brushstyle="SolidPattern">
+                         <color alpha="255">
+                          <red>81</red>
+                          <green>139</green>
+                          <blue>227</blue>
+                         </color>
+                        </brush>
+                       </colorrole>
+                       <colorrole role="Dark">
+                        <brush brushstyle="SolidPattern">
+                         <color alpha="255">
+                          <red>26</red>
+                          <green>55</green>
+                          <blue>100</blue>
+                         </color>
+                        </brush>
+                       </colorrole>
+                       <colorrole role="Mid">
+                        <brush brushstyle="SolidPattern">
+                         <color alpha="255">
+                          <red>34</red>
+                          <green>73</green>
+                          <blue>133</blue>
+                         </color>
+                        </brush>
+                       </colorrole>
+                       <colorrole role="Text">
+                        <brush brushstyle="SolidPattern">
+                         <color alpha="255">
+                          <red>0</red>
+                          <green>0</green>
+                          <blue>0</blue>
+                         </color>
+                        </brush>
+                       </colorrole>
+                       <colorrole role="BrightText">
+                        <brush brushstyle="SolidPattern">
+                         <color alpha="255">
+                          <red>255</red>
+                          <green>255</green>
+                          <blue>255</blue>
+                         </color>
+                        </brush>
+                       </colorrole>
+                       <colorrole role="ButtonText">
+                        <brush brushstyle="SolidPattern">
+                         <color alpha="255">
+                          <red>0</red>
+                          <green>0</green>
+                          <blue>0</blue>
+                         </color>
+                        </brush>
+                       </colorrole>
+                       <colorrole role="Base">
+                        <brush brushstyle="SolidPattern">
+                         <color alpha="255">
+                          <red>78</red>
+                          <green>154</green>
+                          <blue>6</blue>
+                         </color>
+                        </brush>
+                       </colorrole>
+                       <colorrole role="Window">
+                        <brush brushstyle="SolidPattern">
+                         <color alpha="255">
+                          <red>78</red>
+                          <green>154</green>
+                          <blue>6</blue>
+                         </color>
+                        </brush>
+                       </colorrole>
+                       <colorrole role="Shadow">
+                        <brush brushstyle="SolidPattern">
+                         <color alpha="255">
+                          <red>211</red>
+                          <green>215</green>
+                          <blue>207</blue>
+                         </color>
+                        </brush>
+                       </colorrole>
+                       <colorrole role="AlternateBase">
+                        <brush brushstyle="SolidPattern">
+                         <color alpha="255">
+                          <red>153</red>
+                          <green>182</green>
+                          <blue>227</blue>
+                         </color>
+                        </brush>
+                       </colorrole>
+                       <colorrole role="ToolTipBase">
+                        <brush brushstyle="SolidPattern">
+                         <color alpha="255">
+                          <red>255</red>
+                          <green>255</green>
+                          <blue>220</blue>
+                         </color>
+                        </brush>
+                       </colorrole>
+                       <colorrole role="ToolTipText">
+                        <brush brushstyle="SolidPattern">
+                         <color alpha="255">
+                          <red>211</red>
+                          <green>215</green>
+                          <blue>207</blue>
+                         </color>
+                        </brush>
+                       </colorrole>
+                      </active>
+                      <inactive>
+                       <colorrole role="WindowText">
+                        <brush brushstyle="SolidPattern">
+                         <color alpha="255">
+                          <red>0</red>
+                          <green>0</green>
+                          <blue>0</blue>
+                         </color>
+                        </brush>
+                       </colorrole>
+                       <colorrole role="Button">
+                        <brush brushstyle="SolidPattern">
+                         <color alpha="255">
+                          <red>78</red>
+                          <green>154</green>
+                          <blue>6</blue>
+                         </color>
+                        </brush>
+                       </colorrole>
+                       <colorrole role="Light">
+                        <brush brushstyle="SolidPattern">
+                         <color alpha="255">
+                          <red>111</red>
+                          <green>168</green>
+                          <blue>255</blue>
+                         </color>
+                        </brush>
+                       </colorrole>
+                       <colorrole role="Midlight">
+                        <brush brushstyle="SolidPattern">
+                         <color alpha="255">
+                          <red>81</red>
+                          <green>139</green>
+                          <blue>227</blue>
+                         </color>
+                        </brush>
+                       </colorrole>
+                       <colorrole role="Dark">
+                        <brush brushstyle="SolidPattern">
+                         <color alpha="255">
+                          <red>26</red>
+                          <green>55</green>
+                          <blue>100</blue>
+                         </color>
+                        </brush>
+                       </colorrole>
+                       <colorrole role="Mid">
+                        <brush brushstyle="SolidPattern">
+                         <color alpha="255">
+                          <red>34</red>
+                          <green>73</green>
+                          <blue>133</blue>
+                         </color>
+                        </brush>
+                       </colorrole>
+                       <colorrole role="Text">
+                        <brush brushstyle="SolidPattern">
+                         <color alpha="255">
+                          <red>0</red>
+                          <green>0</green>
+                          <blue>0</blue>
+                         </color>
+                        </brush>
+                       </colorrole>
+                       <colorrole role="BrightText">
+                        <brush brushstyle="SolidPattern">
+                         <color alpha="255">
+                          <red>255</red>
+                          <green>255</green>
+                          <blue>255</blue>
+                         </color>
+                        </brush>
+                       </colorrole>
+                       <colorrole role="ButtonText">
+                        <brush brushstyle="SolidPattern">
+                         <color alpha="255">
+                          <red>0</red>
+                          <green>0</green>
+                          <blue>0</blue>
+                         </color>
+                        </brush>
+                       </colorrole>
+                       <colorrole role="Base">
+                        <brush brushstyle="SolidPattern">
+                         <color alpha="255">
+                          <red>78</red>
+                          <green>154</green>
+                          <blue>6</blue>
+                         </color>
+                        </brush>
+                       </colorrole>
+                       <colorrole role="Window">
+                        <brush brushstyle="SolidPattern">
+                         <color alpha="255">
+                          <red>78</red>
+                          <green>154</green>
+                          <blue>6</blue>
+                         </color>
+                        </brush>
+                       </colorrole>
+                       <colorrole role="Shadow">
+                        <brush brushstyle="SolidPattern">
+                         <color alpha="255">
+                          <red>211</red>
+                          <green>215</green>
+                          <blue>207</blue>
+                         </color>
+                        </brush>
+                       </colorrole>
+                       <colorrole role="AlternateBase">
+                        <brush brushstyle="SolidPattern">
+                         <color alpha="255">
+                          <red>153</red>
+                          <green>182</green>
+                          <blue>227</blue>
+                         </color>
+                        </brush>
+                       </colorrole>
+                       <colorrole role="ToolTipBase">
+                        <brush brushstyle="SolidPattern">
+                         <color alpha="255">
+                          <red>255</red>
+                          <green>255</green>
+                          <blue>220</blue>
+                         </color>
+                        </brush>
+                       </colorrole>
+                       <colorrole role="ToolTipText">
+                        <brush brushstyle="SolidPattern">
+                         <color alpha="255">
+                          <red>211</red>
+                          <green>215</green>
+                          <blue>207</blue>
+                         </color>
+                        </brush>
+                       </colorrole>
+                      </inactive>
+                      <disabled>
+                       <colorrole role="WindowText">
+                        <brush brushstyle="SolidPattern">
+                         <color alpha="255">
+                          <red>0</red>
+                          <green>0</green>
+                          <blue>0</blue>
+                         </color>
+                        </brush>
+                       </colorrole>
+                       <colorrole role="Button">
+                        <brush brushstyle="SolidPattern">
+                         <color alpha="255">
+                          <red>78</red>
+                          <green>154</green>
+                          <blue>6</blue>
+                         </color>
+                        </brush>
+                       </colorrole>
+                       <colorrole role="Light">
+                        <brush brushstyle="SolidPattern">
+                         <color alpha="255">
+                          <red>111</red>
+                          <green>168</green>
+                          <blue>255</blue>
+                         </color>
+                        </brush>
+                       </colorrole>
+                       <colorrole role="Midlight">
+                        <brush brushstyle="SolidPattern">
+                         <color alpha="255">
+                          <red>81</red>
+                          <green>139</green>
+                          <blue>227</blue>
+                         </color>
+                        </brush>
+                       </colorrole>
+                       <colorrole role="Dark">
+                        <brush brushstyle="SolidPattern">
+                         <color alpha="255">
+                          <red>26</red>
+                          <green>55</green>
+                          <blue>100</blue>
+                         </color>
+                        </brush>
+                       </colorrole>
+                       <colorrole role="Mid">
+                        <brush brushstyle="SolidPattern">
+                         <color alpha="255">
+                          <red>34</red>
+                          <green>73</green>
+                          <blue>133</blue>
+                         </color>
+                        </brush>
+                       </colorrole>
+                       <colorrole role="Text">
+                        <brush brushstyle="SolidPattern">
+                         <color alpha="255">
+                          <red>0</red>
+                          <green>0</green>
+                          <blue>0</blue>
+                         </color>
+                        </brush>
+                       </colorrole>
+                       <colorrole role="BrightText">
+                        <brush brushstyle="SolidPattern">
+                         <color alpha="255">
+                          <red>255</red>
+                          <green>255</green>
+                          <blue>255</blue>
+                         </color>
+                        </brush>
+                       </colorrole>
+                       <colorrole role="ButtonText">
+                        <brush brushstyle="SolidPattern">
+                         <color alpha="255">
+                          <red>0</red>
+                          <green>0</green>
+                          <blue>0</blue>
+                         </color>
+                        </brush>
+                       </colorrole>
+                       <colorrole role="Base">
+                        <brush brushstyle="SolidPattern">
+                         <color alpha="255">
+                          <red>78</red>
+                          <green>154</green>
+                          <blue>6</blue>
+                         </color>
+                        </brush>
+                       </colorrole>
+                       <colorrole role="Window">
+                        <brush brushstyle="SolidPattern">
+                         <color alpha="255">
+                          <red>78</red>
+                          <green>154</green>
+                          <blue>6</blue>
+                         </color>
+                        </brush>
+                       </colorrole>
+                       <colorrole role="Shadow">
+                        <brush brushstyle="SolidPattern">
+                         <color alpha="255">
+                          <red>211</red>
+                          <green>215</green>
+                          <blue>207</blue>
+                         </color>
+                        </brush>
+                       </colorrole>
+                       <colorrole role="AlternateBase">
+                        <brush brushstyle="SolidPattern">
+                         <color alpha="255">
+                          <red>52</red>
+                          <green>110</green>
+                          <blue>200</blue>
+                         </color>
+                        </brush>
+                       </colorrole>
+                       <colorrole role="ToolTipBase">
+                        <brush brushstyle="SolidPattern">
+                         <color alpha="255">
+                          <red>255</red>
+                          <green>255</green>
+                          <blue>220</blue>
+                         </color>
+                        </brush>
+                       </colorrole>
+                       <colorrole role="ToolTipText">
+                        <brush brushstyle="SolidPattern">
+                         <color alpha="255">
+                          <red>211</red>
+                          <green>215</green>
+                          <blue>207</blue>
+                         </color>
+                        </brush>
+                       </colorrole>
+                      </disabled>
+                     </palette>
+                    </property>
+                    <property name="styleSheet">
+                     <string notr="true">QPushButton {	
+	background-color: rgb(78, 154, 6);
+	border: 2px solid rgb(50, 88, 50);
+	border-radius: 5px;
+	color:black;
+	font-size: 12pt;
+	font-weight: bold;
+}
+QPushButton:hover {	
+	background-color: rgb(50, 88, 50);
+	border: 2px solid rgb(45, 60, 45);
+	color:white;
+}
+QPushButton:pressed {	
+	background-color: rgb(85, 170, 255);
+	border: 2px solid rgb(160, 170, 255);
+	color: rgb(35, 35, 35);
+}</string>
+                    </property>
+                    <property name="text">
+                     <string>Add PDF</string>
+                    </property>
+                    <property name="icon">
+                     <iconset resource="../resources/metadatapdf.qrc">
+                      <normaloff>:/icons/cil-plus.png</normaloff>:/icons/cil-plus.png</iconset>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QPushButton" name="buttonRemovePDF">
+                    <property name="minimumSize">
+                     <size>
+                      <width>0</width>
+                      <height>0</height>
+                     </size>
+                    </property>
+                    <property name="styleSheet">
+                     <string notr="true">QPushButton {	
+	background-color: rgb(78, 154, 6);
+	border: 2px solid rgb(50, 88, 50);
+	border-radius: 5px;
+	color:black;
+	font-size: 12pt;
+	font-weight: bold;
+}
+QPushButton:hover {	
+	background-color: rgb(50, 88, 50);
+	border: 2px solid rgb(45, 60, 45);
+	color:white;
+}
+QPushButton:pressed {	
+	background-color: rgb(85, 170, 255);
+	border: 2px solid rgb(160, 170, 255);
+	color: rgb(35, 35, 35);
+}</string>
+                    </property>
+                    <property name="text">
+                     <string>Remove last PDF</string>
+                    </property>
+                    <property name="icon">
+                     <iconset resource="../resources/metadatapdf.qrc">
+                      <normaloff>:/icons/cil-minus.png</normaloff>:/icons/cil-minus.png</iconset>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </item>
+                <item>
+                 <widget class="QPlainTextEdit" name="outputPDFtoMerge">
+                  <property name="styleSheet">
+                   <string notr="true">QLineEdit {
+	border: 1px solid rgb(32, 74, 135);
+	border-radius: 5px;
+	padding: 1px;
+	background-color: rgb(62, 101, 164);	
+	color: rgb(220, 220, 220);
+}
+QLineEdit:hover {
+	border: 1px solid rgb(136, 138, 133);
+}
+QLineEdit:focus {
+	border: 1px solid rgb(85, 170, 255);
+	color: rgb(200, 200, 200);
+}</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <layout class="QHBoxLayout" name="horizontalLayout_4">
+                  <item>
+                   <widget class="QPushButton" name="buttonMergePDF">
+                    <property name="minimumSize">
+                     <size>
+                      <width>0</width>
+                      <height>40</height>
+                     </size>
+                    </property>
+                    <property name="styleSheet">
+                     <string notr="true">QPushButton {	
+	background-color: rgb(78, 154, 6);
+	border: 2px solid rgb(50, 88, 50);
+	border-radius: 5px;
+	color:black;
+	font-size: 12pt;
+	font-weight: bold;
+}
+QPushButton:hover {	
+	background-color: rgb(50, 88, 50);
+	border: 2px solid rgb(45, 60, 45);
+	color:white;
+}
+QPushButton:pressed {	
+	background-color: rgb(85, 170, 255);
+	border: 2px solid rgb(160, 170, 255);
+	color: rgb(35, 35, 35);
+}</string>
+                    </property>
+                    <property name="text">
+                     <string>Merge PDFs</string>
+                    </property>
+                    <property name="icon">
+                     <iconset resource="../resources/metadatapdf.qrc">
+                      <normaloff>:/icons/annex.png</normaloff>:/icons/annex.png</iconset>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </item>
+               </layout>
+              </item>
+             </layout>
+            </widget>
             <widget class="QWidget" name="Help">
              <property name="styleSheet">
               <string notr="true"/>
@@ -10341,8 +10959,8 @@ QPushButton:pressed {
                <widget class="QFrame" name="Help_text">
                 <property name="maximumSize">
                  <size>
-                  <width>400</width>
-                  <height>400</height>
+                  <width>600</width>
+                  <height>450</height>
                  </size>
                 </property>
                 <property name="styleSheet">
@@ -10424,11 +11042,11 @@ border-radius: 20px;
                      <property name="maximumSize">
                       <size>
                        <width>16777215</width>
-                       <height>320</height>
+                       <height>420</height>
                       </size>
                      </property>
                      <property name="text">
-                      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#eeeeec;&quot;&gt;1- Press the button &amp;quot;Select PDF&amp;quot;.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-size:6pt; color:#242424;&quot;&gt;h&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; color:#eeeeec;&quot;&gt;2- Select the PDF that you want to change the metadata &lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-size:6pt; color:#242424;&quot;&gt;h&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; color:#eeeeec;&quot;&gt;(PDF name or path file without spaces).&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-size:6pt; color:#242424;&quot;&gt;h&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; color:#eeeeec;&quot;&gt;3- Change the fields of the metadata file as desired&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; color:#eeeeec;&quot;&gt;(title, author, etc).&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-size:6pt; color:#242424;&quot;&gt;h&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; color:#eeeeec;&quot;&gt;4- Press the button &amp;quot;Convert Metadata&amp;quot;.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-size:6pt; color:#242424;&quot;&gt;h&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; color:#eeeeec;&quot;&gt;5- Find the output file with the desired metadata.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:12pt; font-weight:600; color:#eeeeec;&quot;&gt;Change Metadata&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-size:10pt; color:#eeeeec;&quot;&gt;1- Press the button &amp;quot;Select PDF&amp;quot;.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-size:10pt; color:#eeeeec;&quot;&gt;2- Select the PDF that you want to change the metadata (PDF name or path file without spaces).&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-size:10pt; color:#eeeeec;&quot;&gt;3- Change the fields of the metadata file as desired (title, author, etc).&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-size:10pt; color:#eeeeec;&quot;&gt;4- Press the button &amp;quot;Convert Metadata&amp;quot;.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-size:10pt; color:#eeeeec;&quot;&gt;5- Find the output file with the desired metadata.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-size:12pt; font-weight:600; color:#eeeeec;&quot;&gt;Merge PDFs&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-size:10pt; color:#eeeeec;&quot;&gt;1- Add PDF files using button &amp;quot;Add PDF&amp;quot;&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-size:10pt; color:#eeeeec;&quot;&gt;2- Remove files added incorrectly (&amp;quot;Remove last PDF&amp;quot; button)&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-size:10pt; color:#eeeeec;&quot;&gt;3- Press the button &amp;quot;Merge PDFs&amp;quot;, file is saved as &amp;quot;MetadataPDF_Merged.pdf&amp;quot;&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                      </property>
                     </widget>
                    </item>

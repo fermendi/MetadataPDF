@@ -1,6 +1,6 @@
 -------------------------------------------------------------
 # MetadataPDF
-Simple program to change the metadata in PDF files
+Simple program to change metadata and merge PDF files
 
 Fernando Mendiburu - 2020
 -------------------------------------------------------------
@@ -61,10 +61,10 @@ for more information about the project click [here](https://github.com/Jorgen-Vi
 
 ## User Guide
 
-`MetadataPDF` GUI is shown below:
+`MetadataPDF` GUI for change Metadata is shown below:
 
 <p align="center">
-  <img src="./resources/gui/GUI.png" alt="Size Limit CLI" width="600">
+  <img src="./resources/gui/GUI_Metadata.png" alt="Size Limit CLI" width="600">
 </p>
 
 
@@ -77,3 +77,17 @@ for more information about the project click [here](https://github.com/Jorgen-Vi
 4. Press the button `"Convert Metadata"`.
 
 5. Find the output file with the desired metadata in the same path of the original PDF file.
+
+
+`MetadataPDF` GUI for merge PDF files is shown below:
+
+<p align="center">
+  <img src="./resources/gui/GUI_Merge.png" alt="Size Limit CLI" width="600">
+</p>
+
+
+1. Add PDF files using button `"Add PDF"`.
+
+2. Remove files added incorrectly (`"Remove last PDF"` button).
+
+3. Press the button `"Merge PDFs"`, merged file is saved as `"MetadataPDF_Merged.pdf"`.
