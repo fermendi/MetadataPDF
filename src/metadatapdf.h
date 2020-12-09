@@ -43,7 +43,8 @@ private slots:
 
 private:
     enum stackedWidgetState {Init, App, Merge, Help, About};
-    enum statusBarState {SelectFile, WrongPath, WrongNullPDFs, Progress_Metadata, Progress_Merge, Success_Metadata, Success_Merge, Clear};
+    enum statusBarState {SelectFile, WrongPath, WrongNullPDFs, WrongPDFsPath, Progress_Metadata,
+                         Progress_Merge, Success_Metadata, Success_Merge, Clear};
 
     bool MessageChangeMetadata();
     void CreatePdfmarksFile();

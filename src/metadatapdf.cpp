@@ -58,6 +58,7 @@ void MetadataPDF::on_buttonSelectPDF_clicked()
 void MetadataPDF::ResetGUI() {
     StatusBarHandler(Clear);
     ui->linePDFFile->setStyleSheet("");
+    ui->outputPDFtoMerge->setStyleSheet("");
     ui->buttonAddPDF->setStyleSheet("QPushButton {	"
                                     "background-color: rgb(78, 154, 6);"
                                     "border: 2px solid rgb(50, 88, 50);"
@@ -298,6 +299,11 @@ void MetadataPDF::StatusBarHandler(statusBarState status) {
                                             "font-size: 12pt;"
                                             "font-weight: bold;");
             break;
+        case WrongPDFsPath:
+            ui->statusLabel->setStyleSheet("color:rgb(255, 0, 0);");
+            ui->statusLabel->setText("Please avoid spaces (\" \") in the path or file names and try again!");
+            ui->outputPDFtoMerge->setStyleSheet("border: 2px solid rgb(255, 0, 0); border-radius: 5px;");
+            break;
         case SelectFile:
             ui->statusLabel->setStyleSheet("color:rgb(255, 0, 0);");
             ui->statusLabel->setText("Please select a file!");
@@ -359,9 +365,18 @@ void MetadataPDF::on_buttonAddPDF_clicked()
                 "",
                 "PDF file (*.pdf)");
 
-    qFilesAdd.append(qFiles);
-    PrintPDFs();
+    bool fErr = false;
+    for(QString qFile : qFiles) {
+        std::size_t found = qFile.toStdString().find(" ");
+        if (found!=std::string::npos) {
+            StatusBarHandler(WrongPDFsPath);
+            fErr = true;
+            break;
+        }
+    }
 
+    if(!fErr) qFilesAdd.append(qFiles);
+    PrintPDFs();
 }
 
 void MetadataPDF::on_buttonMerge_clicked()
@@ -372,6 +387,7 @@ void MetadataPDF::on_buttonMerge_clicked()
 
 void MetadataPDF::on_buttonRemovePDF_clicked()
 {
+    ResetGUI();
     if(!qFilesAdd.empty()) {
         qFilesAdd.pop_back();
     }
@@ -387,6 +403,7 @@ void MetadataPDF::PrintPDFs() {
 
 void MetadataPDF::on_buttonMergePDF_clicked()
 {
+    ResetGUI();
     if(!qFilesAdd.empty()) {
         QString QFiles;
         for(QString qFile : qFilesAdd) {
