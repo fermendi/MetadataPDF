@@ -34,13 +34,17 @@ MetadataPDF::MetadataPDF(QWidget *parent) :
     ui->dateMod->setDateTime(QDateTime::currentDateTime());
     ui->dateCreation->setDateTime(QDateTime::currentDateTime());
     ui->linePDFFile->setDisabled(true);
-    ui->outputPDFtoMerge->setDisabled(true);
+    ui->linePDFSplit->setDisabled(true);
+    ui->outputPDFtoMerge->setReadOnly(true);
+    ui->outputPDFtoSplit->setReadOnly(true);
+
     StackedWidgetHandler(Init);
 }
 
 MetadataPDF::~MetadataPDF()
 {
-    delete ui;
+    qConsole.close();
+    delete ui; 
 }
 
 void MetadataPDF::on_buttonSelectPDF_clicked()
@@ -58,6 +62,7 @@ void MetadataPDF::on_buttonSelectPDF_clicked()
 void MetadataPDF::ResetGUI() {
     StatusBarHandler(Clear);
     ui->linePDFFile->setStyleSheet("");
+    ui->linePDFSplit->setStyleSheet("");
     ui->outputPDFtoMerge->setStyleSheet("");
     ui->buttonAddPDF->setStyleSheet("QPushButton {	"
                                     "background-color: rgb(78, 154, 6);"
@@ -308,6 +313,7 @@ void MetadataPDF::StatusBarHandler(statusBarState status) {
             ui->statusLabel->setStyleSheet("color:rgb(255, 0, 0);");
             ui->statusLabel->setText("Please select a file!");
             ui->linePDFFile->setStyleSheet("border: 2px solid rgb(255, 0, 0); border-radius: 5px;");
+            ui->linePDFSplit->setStyleSheet("border: 2px solid rgb(255, 0, 0); border-radius: 5px;");
             break;
         case Progress_Metadata:
             ui->statusLabel->setStyleSheet("color:rgb(255, 255, 0);");
@@ -317,6 +323,10 @@ void MetadataPDF::StatusBarHandler(statusBarState status) {
             ui->statusLabel->setStyleSheet("color:rgb(255, 255, 0);");
             ui->statusLabel->setText("Merge PDFs, please wait...");
             break;
+        case Progress_Split:
+            ui->statusLabel->setStyleSheet("color:rgb(255, 255, 0);");
+            ui->statusLabel->setText("Split PDF, please wait...");
+            break;
         case Success_Metadata:
             ui->statusLabel->setStyleSheet("color:rgb(0, 255, 0);");
             ui->statusLabel->setText("Metadata has been changed Successfully!");
@@ -325,6 +335,11 @@ void MetadataPDF::StatusBarHandler(statusBarState status) {
         case Success_Merge:
             ui->statusLabel->setStyleSheet("color:rgb(0, 255, 0);");
             ui->statusLabel->setText("PDFs has been merged Successfully!");
+            timer.start(10000);     // 10s to erase the message
+            break;
+        case Success_Split:
+            ui->statusLabel->setStyleSheet("color:rgb(0, 255, 0);");
+            ui->statusLabel->setText("PDFs has been split Successfully!");
             timer.start(10000);     // 10s to erase the message
             break;
         case Clear:
@@ -411,11 +426,85 @@ void MetadataPDF::on_buttonMergePDF_clicked()
             QFiles += qFile;
         }
         StatusBarHandler(Progress_Merge);
-        QProcess::execute(QString("gs -dBATCH -dNOPAUSE -q -sDEVICE=pdfwrite -dAutoRotatePages=/None -sOutputFile=MetadataPDF_Merged.pdf") +
-                          QFiles);
+        QProcess::execute(QString("gs -sPAPERSIZE=a4 -dBATCH -dNOPAUSE -q -sDEVICE=pdfwrite -dAutoRotatePages=/None -sOutputFile=MetadataPDF_Merged.pdf%1").arg(QFiles));
         StatusBarHandler(Success_Merge);
     }
     else {
         StatusBarHandler(WrongNullPDFs);
     }
+}
+
+void MetadataPDF::on_buttonSelectPDFSplit_clicked()
+{
+    m_filename = QFileDialog::getOpenFileName(
+                this,
+                tr("Open File"),
+                "",
+                "PDF file (*.pdf)");
+
+    if(!m_filename.isEmpty()) {
+
+        ui->linePDFSplit->setText(m_filename);
+        ResetGUI();
+
+        QString Command = "sh";
+        QStringList args;
+        args << "-c" << QString("gs -q -dNODISPLAY -c \"(%1) (r) file runpdfbegin pdfpagecount = quit\"").arg(m_filename);
+
+        qConsole.start(Command,args,QIODevice::ReadOnly); //Starts execution of command
+        qConsole.waitForFinished();                       //Waits for execution to complete
+        qDatafromConsole = qConsole.readAllStandardOutput();
+        qDatafromConsole.remove(QRegExp("[\\n]"));
+        QString qText = QString("File to split: %1\n"
+                                "Number of pages: %2\n"
+                                "The file will split in %2 PDFs:\n")
+                .arg(m_filename)
+                .arg(qDatafromConsole);
+
+        ui->outputPDFtoSplit->setPlainText(qText);
+
+        QString NameFile = m_filename.left(m_filename.size()-4);
+        for(int i = 1; i <= qDatafromConsole.toInt();++i) {
+            QString qFile = NameFile + "_" + QString::number(i) + ".pdf";
+            vFilesForSplit.push_back(qFile);
+            ui->outputPDFtoSplit->appendPlainText(qFile);
+        }
+    }
+}
+
+void MetadataPDF::on_buttonSplitPDF_clicked()
+{
+    ResetGUI();
+    if(!vFilesForSplit.empty()) {
+        StatusBarHandler(Progress_Split);
+        QString cmd;
+        for(int i = 1; i <= qDatafromConsole.toInt();++i) {
+            cmd += QString("yes | gs -dBATCH -sOutputFile='%1' -dFirstPage=%2 -dLastPage=%3 -sDEVICE=pdfwrite '%4' > /dev/null & ").arg(vFilesForSplit[i-1]).arg(i).arg(i).arg(m_filename);
+        }
+
+        if(!cmd.isEmpty()) {
+            cmd.remove(-3,3);
+
+            QString filename = "split.sh";
+            QFile file(filename);
+            if (file.open(QIODevice::WriteOnly)) {
+                QTextStream stream(&file);
+                stream << cmd << endl;
+            }
+            file.close();
+            QCoreApplication::processEvents();
+            QProcess::execute(QString("chmod +x split.sh"));
+            qConsole.start("sh", QStringList() << "-c" << "./split.sh");
+            QProcess::execute(QString("rm -rf split.sh"));
+        }
+        StatusBarHandler(Success_Split);
+    }
+    else {
+        StatusBarHandler(SelectFile);
+    }
+}
+
+void MetadataPDF::on_buttonSplit_clicked()
+{
+    StackedWidgetHandler(Split);
 }

@@ -14,6 +14,7 @@
 #include <QMainWindow>
 #include <QMessageBox>
 #include <QTimer>
+#include <QProcess>
 
 namespace Ui {
 class MetadataPDF;
@@ -38,13 +39,15 @@ private slots:
     void on_buttonAddPDF_clicked();
     void on_buttonMerge_clicked();
     void on_buttonRemovePDF_clicked();
-
     void on_buttonMergePDF_clicked();
+    void on_buttonSelectPDFSplit_clicked();
+    void on_buttonSplitPDF_clicked();
+    void on_buttonSplit_clicked();
 
 private:
-    enum stackedWidgetState {Init, App, Merge, Help, About};
+    enum stackedWidgetState {Init, App, Split, Merge, Help, About};
     enum statusBarState {SelectFile, WrongPath, WrongNullPDFs, WrongPDFsPath, Progress_Metadata,
-                         Progress_Merge, Success_Metadata, Success_Merge, Clear};
+                         Progress_Merge, Progress_Split, Success_Metadata, Success_Merge, Success_Split, Clear};
 
     bool MessageChangeMetadata();
     void CreatePdfmarksFile();
@@ -64,6 +67,9 @@ private:
     std::string m_ModDate;
     std::string m_CreationDate;
     QTimer timer;
+    QProcess qConsole;
+    QString qDatafromConsole;
+    std::vector<QString> vFilesForSplit;
 };
 
 #endif // METADATAPDF_H

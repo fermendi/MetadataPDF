@@ -18,5 +18,6 @@
         <file>logo/logo_80x802.png</file>
         <file>icons/cil-minus.png</file>
         <file>icons/cil-plus.png</file>
+        <file>icons/cil-copy.png</file>
     </qresource>
 </RCC>
