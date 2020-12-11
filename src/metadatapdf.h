@@ -43,11 +43,17 @@ private slots:
     void on_buttonSelectPDFSplit_clicked();
     void on_buttonSplitPDF_clicked();
     void on_buttonSplit_clicked();
+    void on_buttonOCR_clicked();
+
+    void on_buttonSelectPDF_OCR_clicked();
+
+    void on_buttonOCR_PDF_clicked();
 
 private:
-    enum stackedWidgetState {Init, App, Split, Merge, Help, About};
+    enum stackedWidgetState {Init, App, Split, Merge, OCR, Help, About};
     enum statusBarState {SelectFile, WrongPath, WrongNullPDFs, WrongPDFsPath, Progress_Metadata,
-                         Progress_Merge, Progress_Split, Success_Metadata, Success_Merge, Success_Split, Clear};
+                         Progress_Merge, Progress_Split, Progress_OCR, Success_Metadata, Success_Merge,
+                         Success_Split, Success_OCR, Clear};
 
     bool MessageChangeMetadata();
     void CreatePdfmarksFile();
@@ -57,6 +63,7 @@ private:
     void GetDateModAndCurrent();
     void ResetGUI();
     void PrintPDFs();
+    void SelectPDF();
     void StatusBarHandler(statusBarState status);
     void StackedWidgetHandler(stackedWidgetState status);
 

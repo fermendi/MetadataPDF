@@ -19,5 +19,6 @@
         <file>icons/cil-minus.png</file>
         <file>icons/cil-plus.png</file>
         <file>icons/cil-copy.png</file>
+        <file>icons/cil-camera.png</file>
     </qresource>
 </RCC>

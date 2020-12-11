@@ -1,6 +1,6 @@
 -------------------------------------------------------------
 # MetadataPDF
-Simple program to change metadata and merge PDF files
+Simple program to change metadata, split, OCR, and merge PDF files
 
 Fernando Mendiburu - 2020
 -------------------------------------------------------------
@@ -14,6 +14,11 @@ Fernando Mendiburu - 2020
 - [Installation](#installation)
 - [Dependences](#Dependences)
 - [User Guide](#User-Guide)
+
+<p align="center">
+  <img src="./resources/gui/GUI_Main.png" alt="Size Limit CLI" width="300">
+</p>
+
 
 ## Installation
 
@@ -50,6 +55,8 @@ $ make
 
 `Ghostscript`
 
+`OCR tools`
+
 #### Ghostscript tips
 
 See the tips in this [page](http://milan.kupcevic.net/ghostscript-ps-pdf/).
@@ -58,6 +65,14 @@ See the tips in this [page](http://milan.kupcevic.net/ghostscript-ps-pdf/).
 
 MetadataPDF project uses a modification of a MainWindow class with frameless window,
 for more information about the project click [here](https://github.com/Jorgen-VikingGod/Qt-Frameless-Window-DarkStyle).
+
+#### OCR tools
+
+Optical Character Recognition (OCR) is the conversion of scanned images of handwritten, typewritten or printed text into searchable, editable documents.
+
+```
+$ sudo apt-get install ocrmypdf
+```
 
 ## User Guide
 
@@ -79,6 +94,20 @@ for more information about the project click [here](https://github.com/Jorgen-Vi
 5. Find the output file with the desired metadata in the same path of the original PDF file.
 
 
+`MetadataPDF` GUI for splitting PDF files is shown below:
+
+<p align="center">
+  <img src="./resources/gui/GUI_Split.png" alt="Size Limit CLI" width="600">
+</p>
+
+
+1. Press the button `"Select PDF"`.
+
+2. Choose the PDF of `n` pages.
+
+3. Press `"Split PDF"`, you'll obtain `n` PDFs.
+
+
 `MetadataPDF` GUI for merge PDF files is shown below:
 
 <p align="center">
@@ -91,3 +120,17 @@ for more information about the project click [here](https://github.com/Jorgen-Vi
 2. Remove files added incorrectly (`"Remove last PDF"` button).
 
 3. Press the button `"Merge PDFs"`, merged file is saved as `"MetadataPDF_Merged.pdf"`.
+
+
+`MetadataPDF` GUI for recognize PDF files using OCR:
+
+<p align="center">
+  <img src="./resources/gui/GUI_OCR.png" alt="Size Limit CLI" width="600">
+</p>
+
+
+1. Select the PDF to recognize characters (`"Select PDF"` button).
+
+2. Press `"OCR PDF"` button to start the conversion (this could take time!).
+
+

@@ -37,6 +37,7 @@ MetadataPDF::MetadataPDF(QWidget *parent) :
     ui->linePDFSplit->setDisabled(true);
     ui->outputPDFtoMerge->setReadOnly(true);
     ui->outputPDFtoSplit->setReadOnly(true);
+    ui->outputPDFtoOCR->setReadOnly(true);
 
     StackedWidgetHandler(Init);
 }
@@ -47,8 +48,8 @@ MetadataPDF::~MetadataPDF()
     delete ui; 
 }
 
-void MetadataPDF::on_buttonSelectPDF_clicked()
-{
+
+void MetadataPDF::SelectPDF() {
     m_filename = QFileDialog::getOpenFileName(
                 this,
                 tr("Open File"),
@@ -59,12 +60,37 @@ void MetadataPDF::on_buttonSelectPDF_clicked()
     if(!m_filename.isEmpty()) ResetGUI();
 }
 
+void MetadataPDF::on_buttonSelectPDF_clicked()
+{
+    SelectPDF();
+}
+
 void MetadataPDF::ResetGUI() {
     StatusBarHandler(Clear);
     ui->linePDFFile->setStyleSheet("");
     ui->linePDFSplit->setStyleSheet("");
     ui->outputPDFtoMerge->setStyleSheet("");
+    ui->outputPDFtoOCR->setStyleSheet("");
+    ui->outputPDFtoSplit->setStyleSheet("");
     ui->buttonAddPDF->setStyleSheet("QPushButton {	"
+                                    "background-color: rgb(78, 154, 6);"
+                                    "border: 2px solid rgb(50, 88, 50);"
+                                    "border-radius: 5px;"
+                                    "color:black;"
+                                    "font-size: 12pt;"
+                                    "font-weight: bold;"
+                                    "}"
+                                    "QPushButton:hover {	"
+                                    "background-color: rgb(50, 88, 50);"
+                                    "border: 2px solid rgb(45, 60, 45);"
+                                    "color:white;"
+                                    "}"
+                                    "QPushButton:pressed {	"
+                                    "background-color: rgb(85, 170, 255);"
+                                    "border: 2px solid rgb(160, 170, 255);"
+                                    "color: rgb(35, 35, 35);"
+                                    "}");
+    ui->buttonSelectPDF_OCR->setStyleSheet("QPushButton {	"
                                     "background-color: rgb(78, 154, 6);"
                                     "border: 2px solid rgb(50, 88, 50);"
                                     "border-radius: 5px;"
@@ -248,8 +274,8 @@ void MetadataPDF::on_buttonMenuD_clicked()
     int maxExtend = 160;
     QRect SizeIconXY = ui->Icon_Move->geometry();
     QRect SizeIconXYExtended;
-    QRect StdPosSizeIconXY(4,440,42,42);
-    QRect MaxPosSizeIconXY(38,420,84,84);
+    QRect StdPosSizeIconXY(4,500,42,42);
+    QRect MaxPosSizeIconXY(38,480,84,84);
 
     if(witdthMenu == 50) {
         widthExtended = maxExtend;
@@ -293,11 +319,18 @@ void MetadataPDF::StatusBarHandler(statusBarState status) {
             ui->statusLabel->setStyleSheet("color:rgb(255, 0, 0);");
             ui->statusLabel->setText("Please avoid spaces (\" \") in the path or file name and try again!");
             ui->linePDFFile->setStyleSheet("border: 2px solid rgb(255, 0, 0); border-radius: 5px;");
+            ui->linePDFSplit->setStyleSheet("border: 2px solid rgb(255, 0, 0); border-radius: 5px;");
             break;
         case WrongNullPDFs:
             ui->statusLabel->setStyleSheet("color:rgb(255, 0, 0);");
-            ui->statusLabel->setText("Please add PDFs to merge and try again!");
+            ui->statusLabel->setText("Please add PDFs and try again!");
             ui->buttonAddPDF->setStyleSheet("border: 2px solid rgb(255, 0, 0); "
+                                            "border-radius: 5px; "
+                                            "background-color: "
+                                            "rgb(78, 154, 6);color:black;"
+                                            "font-size: 12pt;"
+                                            "font-weight: bold;");
+            ui->buttonSelectPDF_OCR->setStyleSheet("border: 2px solid rgb(255, 0, 0); "
                                             "border-radius: 5px; "
                                             "background-color: "
                                             "rgb(78, 154, 6);color:black;"
@@ -308,6 +341,7 @@ void MetadataPDF::StatusBarHandler(statusBarState status) {
             ui->statusLabel->setStyleSheet("color:rgb(255, 0, 0);");
             ui->statusLabel->setText("Please avoid spaces (\" \") in the path or file names and try again!");
             ui->outputPDFtoMerge->setStyleSheet("border: 2px solid rgb(255, 0, 0); border-radius: 5px;");
+            ui->outputPDFtoOCR->setStyleSheet("border: 2px solid rgb(255, 0, 0); border-radius: 5px;");
             break;
         case SelectFile:
             ui->statusLabel->setStyleSheet("color:rgb(255, 0, 0);");
@@ -327,6 +361,10 @@ void MetadataPDF::StatusBarHandler(statusBarState status) {
             ui->statusLabel->setStyleSheet("color:rgb(255, 255, 0);");
             ui->statusLabel->setText("Split PDF, please wait...");
             break;
+        case Progress_OCR:
+            ui->statusLabel->setStyleSheet("color:rgb(255, 255, 0);");
+            ui->statusLabel->setText("OCR PDF, please wait...");
+            break;
         case Success_Metadata:
             ui->statusLabel->setStyleSheet("color:rgb(0, 255, 0);");
             ui->statusLabel->setText("Metadata has been changed Successfully!");
@@ -340,6 +378,11 @@ void MetadataPDF::StatusBarHandler(statusBarState status) {
         case Success_Split:
             ui->statusLabel->setStyleSheet("color:rgb(0, 255, 0);");
             ui->statusLabel->setText("PDFs has been split Successfully!");
+            timer.start(10000);     // 10s to erase the message
+            break;
+        case Success_OCR:
+            ui->statusLabel->setStyleSheet("color:rgb(0, 255, 0);");
+            ui->statusLabel->setText("PDF has been recognized!");
             timer.start(10000);     // 10s to erase the message
             break;
         case Clear:
@@ -436,38 +479,40 @@ void MetadataPDF::on_buttonMergePDF_clicked()
 
 void MetadataPDF::on_buttonSelectPDFSplit_clicked()
 {
-    m_filename = QFileDialog::getOpenFileName(
-                this,
-                tr("Open File"),
-                "",
-                "PDF file (*.pdf)");
+    SelectPDF();
 
     if(!m_filename.isEmpty()) {
-
         ui->linePDFSplit->setText(m_filename);
-        ResetGUI();
+        std::size_t found = m_filename.toStdString().find(" ");
+        if (found!=std::string::npos) {
+            StatusBarHandler(WrongPath);
+        }
+        else {
+            ui->linePDFSplit->setText(m_filename);
+            ResetGUI();
 
-        QString Command = "sh";
-        QStringList args;
-        args << "-c" << QString("gs -q -dNODISPLAY -c \"(%1) (r) file runpdfbegin pdfpagecount = quit\"").arg(m_filename);
+            QString Command = "sh";
+            QStringList args;
+            args << "-c" << QString("gs -q -dNODISPLAY -c \"(%1) (r) file runpdfbegin pdfpagecount = quit\"").arg(m_filename);
 
-        qConsole.start(Command,args,QIODevice::ReadOnly); //Starts execution of command
-        qConsole.waitForFinished();                       //Waits for execution to complete
-        qDatafromConsole = qConsole.readAllStandardOutput();
-        qDatafromConsole.remove(QRegExp("[\\n]"));
-        QString qText = QString("File to split: %1\n"
-                                "Number of pages: %2\n"
-                                "The file will split in %2 PDFs:\n")
-                .arg(m_filename)
-                .arg(qDatafromConsole);
+            qConsole.start(Command,args,QIODevice::ReadOnly);
+            qConsole.waitForFinished();
+            qDatafromConsole = qConsole.readAllStandardOutput();
+            qDatafromConsole.remove(QRegExp("[\\n]"));
+            QString qText = QString("File to split: %1\n"
+                                    "Number of pages: %2\n"
+                                    "The file will split in %2 PDFs:\n")
+                    .arg(m_filename)
+                    .arg(qDatafromConsole);
 
-        ui->outputPDFtoSplit->setPlainText(qText);
+            ui->outputPDFtoSplit->setPlainText(qText);
 
-        QString NameFile = m_filename.left(m_filename.size()-4);
-        for(int i = 1; i <= qDatafromConsole.toInt();++i) {
-            QString qFile = NameFile + "_" + QString::number(i) + ".pdf";
-            vFilesForSplit.push_back(qFile);
-            ui->outputPDFtoSplit->appendPlainText(qFile);
+            QString NameFile = m_filename.left(m_filename.size()-4);
+            for(int i = 1; i <= qDatafromConsole.toInt();++i) {
+                QString qFile = NameFile + "_" + QString::number(i) + ".pdf";
+                vFilesForSplit.push_back(qFile);
+                ui->outputPDFtoSplit->appendPlainText(qFile);
+            }
         }
     }
 }
@@ -507,4 +552,53 @@ void MetadataPDF::on_buttonSplitPDF_clicked()
 void MetadataPDF::on_buttonSplit_clicked()
 {
     StackedWidgetHandler(Split);
+}
+
+void MetadataPDF::on_buttonOCR_clicked()
+{
+    StackedWidgetHandler(OCR);
+}
+
+void MetadataPDF::on_buttonSelectPDF_OCR_clicked()
+{
+    SelectPDF();
+
+    if(!m_filename.isEmpty()) {
+        ui->outputPDFtoOCR->setPlainText("File to perform OCR: " + m_filename);
+        ResetGUI();
+    }
+
+}
+
+void MetadataPDF::on_buttonOCR_PDF_clicked()
+{
+    if(!m_filename.isEmpty()) {
+        std::size_t found = m_filename.toStdString().find(" ");
+        if (found!=std::string::npos) {
+            StatusBarHandler(WrongPDFsPath);
+        }
+        else {
+            ResetGUI();
+            StatusBarHandler(Progress_OCR);
+
+            QString Command = "sh";
+            QStringList args;
+            args << "-c" << QString("ocrmypdf --force-ocr %1 MetadataPDF_OCR.pdf").arg(m_filename);
+            qConsole.start(Command,args,QIODevice::ReadOnly);
+            qConsole.waitForFinished();
+            QString qStdOut = qConsole.readAllStandardOutput();
+            QString qStdError = qConsole.readAllStandardError();
+
+            ui->outputPDFtoOCR->appendPlainText("\nOutput:\n\n");
+            ui->outputPDFtoOCR->appendPlainText(qStdOut);
+            ui->outputPDFtoOCR->appendPlainText("\nErrors:\n\n");
+            ui->outputPDFtoOCR->appendPlainText(qStdError);
+            StatusBarHandler(Success_OCR);
+
+        }
+    }
+    else {
+        StatusBarHandler(SelectFile);
+    }
+
 }
